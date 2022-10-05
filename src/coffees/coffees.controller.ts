@@ -1,11 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
-  Post,
   Patch,
-  Delete,
+  Post,
 } from '@nestjs/common';
 import { CoffeesService } from './coffees.service';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
@@ -16,32 +16,32 @@ export class CoffeesController {
   constructor(private readonly coffeeService: CoffeesService) {}
 
   @Get()
-  findAll() {
-    return this.coffeeService.findAll();
+  async findAll() {
+    return await this.coffeeService.findAll();
   }
 
   @Get('flavours')
-  getFlavours() {
-    return this.coffeeService.getFlavours();
+  async getFlavours() {
+    return await this.coffeeService.getFlavours();
   }
 
   @Get(':id')
-  findCoffee(@Param('id') id: number) {
-    return this.coffeeService.findCoffee(id);
+  async findCoffee(@Param('id') id: string) {
+    return await this.coffeeService.findCoffee(id);
   }
 
   @Post()
-  createCoffee(@Body() body: CreateCoffeeDto) {
-    return this.coffeeService.createCoffee(body);
+  async createCoffee(@Body() body: CreateCoffeeDto) {
+    return await this.coffeeService.createCoffee(body);
   }
 
   @Patch(':id')
-  updateCoffee(@Param('id') id: number, @Body() body: UpdateCoffeeDto) {
-    return this.coffeeService.updateCoffee(id, body);
+  async updateCoffee(@Param('id') id: string, @Body() body: UpdateCoffeeDto) {
+    return await this.coffeeService.updateCoffee(id, body);
   }
 
   @Delete(':id')
-  removeCoffee(@Param('id') id: number) {
-    return this.coffeeService.removeCoffee(id);
+  async removeCoffee(@Param('id') id: string) {
+    return await this.coffeeService.removeCoffee(id);
   }
 }

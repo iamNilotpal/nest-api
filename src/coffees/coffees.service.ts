@@ -1,62 +1,70 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { CreateCoffeeDto } from './dto/create-coffee.dto';
 import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 import { Coffee } from './entities/coffee.entity';
 
 @Injectable()
 export class CoffeesService {
-  private coffees: Coffee[] = [
-    {
-      id: 1,
-      name: 'Coffee #1',
-      brand: 'Some brand',
-      flavours: ['Flavour #1', 'Flavour #2'],
-    },
-    {
-      id: 2,
-      name: 'Coffee #2',
-      brand: 'Some brand',
-      flavours: ['Flavour #1', 'Flavour #2'],
-    },
-    {
-      id: 3,
-      name: 'Coffee #3',
-      brand: 'Some brand',
-      flavours: ['Flavour #1', 'Flavour #2'],
-    },
-  ];
+  constructor(
+    @InjectModel(Coffee.name) private readonly coffeeModel: Model<Coffee>
+  ) {}
 
   findAll() {
-    return this.coffees;
+    return this.coffeeModel.find({}).lean().exec();
   }
 
-  findCoffee(id: number) {
-    const coffee = this.coffees.find((coffee) => coffee.id === id);
+  async findCoffee(id: string) {
+    this.isValidId(id);
+    const coffee = await this.coffeeModel.findOne({ _id: id }).lean().exec();
     if (!coffee)
       throw new NotFoundException(`Coffee with id ${id} doesn't exist.`);
     return coffee;
   }
 
-  createCoffee(createCoffeeDto: CreateCoffeeDto) {
-    const coffee = { ...createCoffeeDto, id: this.coffees.length + 1 };
-    this.coffees.push(coffee);
+  async createCoffee(createCoffeeDto: CreateCoffeeDto) {
+    const coffee = await this.coffeeModel.create(createCoffeeDto);
     return coffee;
   }
 
-  updateCoffee(id: number, updateCoffeeDto: UpdateCoffeeDto) {
-    const coffee = this.findCoffee(id);
-    const updatedCoffee = { ...coffee, ...updateCoffeeDto };
-    this.coffees = this.coffees.map((c) => (c.id === id ? updatedCoffee : c));
-    return updatedCoffee;
-  }
+  async updateCoffee(id: string, updateCoffeeDto: UpdateCoffeeDto) {
+    this.isValidId(id);
+    const coffee = await this.coffeeModel
+      .findOneAndUpdate({ _id: id }, { $set: updateCoffeeDto }, { new: true })
+      .lean()
+      .exec();
 
-  removeCoffee(id: number) {
-    const coffee = this.findCoffee(id);
-    this.coffees = this.coffees.filter((c) => c.id !== id);
+    if (!coffee)
+      throw new NotFoundException(`Coffee with id ${id} doesn't exist.`);
     return coffee;
   }
 
-  getFlavours() {
-    return this.coffees.map((coffee) => ({ [coffee.id]: coffee.flavours }));
+  async removeCoffee(id: string) {
+    this.isValidId(id);
+    const coffee = await this.coffeeModel
+      .findOneAndDelete({ _id: id })
+      .lean()
+      .exec();
+    if (!coffee)
+      throw new NotFoundException(`Coffee with id ${id} doesn't exist.`);
+    return coffee;
+  }
+
+  async getFlavours() {
+    const coffees = await this.coffeeModel.find().lean().exec();
+    return coffees.map((coffee) => ({
+      coffeeId: coffee._id,
+      flavours: coffee.flavours,
+    }));
+  }
+
+  private isValidId(id: string) {
+    const isValid = isValidObjectId(id);
+    if (!isValid) throw new BadRequestException('ID must be valid.');
   }
 }
