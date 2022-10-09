@@ -1,7 +1,7 @@
 import {
-  Injectable,
-  NotFoundException,
   BadRequestException,
+  Injectable,
+  NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
@@ -52,6 +52,7 @@ export class CoffeesService {
       .findOneAndDelete({ _id: id })
       .lean()
       .exec();
+
     if (!coffee)
       throw new NotFoundException(`Coffee with id ${id} doesn't exist.`);
     return coffee;

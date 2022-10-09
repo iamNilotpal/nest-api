@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { CoffeesModule } from './coffees/coffees.module';
+import { CoffeesModule } from './modules/coffees/coffees.module';
+import { CoffeeRatingModule } from './modules/coffee-rating/coffee-rating.module';
 
 @Module({
   imports: [
@@ -10,8 +9,7 @@ import { CoffeesModule } from './coffees/coffees.module';
       dbName: 'NestApi',
     }),
     CoffeesModule,
+    CoffeeRatingModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}
