@@ -19,7 +19,7 @@ export class HttpExceptionFilter<T extends HttpException>
     const errorName = exception.name;
 
     const error =
-      typeof response === 'string'
+      typeof exceptionResponse === 'string'
         ? {
             message: exceptionResponse,
             statusCode: status,
@@ -29,7 +29,6 @@ export class HttpExceptionFilter<T extends HttpException>
 
     return response.status(status).json({
       ok: false,
-      date: new Date().toDateString(),
       ...error,
     });
   }

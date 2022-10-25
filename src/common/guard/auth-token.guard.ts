@@ -20,7 +20,7 @@ export class AuthTokenGuard implements CanActivate {
 
     if (bearer) {
       const [, token] = bearer?.split(' ');
-      return token === 'myToken';
+      return token === 'some token that is super secret';
     }
     return false;
   }
