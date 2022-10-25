@@ -19,7 +19,7 @@ export class AuthTokenGuard implements CanActivate {
     const bearer = request.headers.authorization;
 
     if (bearer) {
-      const [, token] = bearer?.split(' ');
+      const token = bearer?.split('Bearer')[1].trim();
       return token === 'some token that is super secret';
     }
     return false;
