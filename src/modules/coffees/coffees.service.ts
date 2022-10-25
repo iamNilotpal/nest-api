@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
@@ -18,7 +18,12 @@ export class CoffeesService {
 
   findAll(paginationQuery: PaginationQueryDto) {
     const { limit, offset } = paginationQuery;
-    return this.coffeeModel.find({}).skip(offset).limit(limit).lean().exec();
+    return this.coffeeModel
+      .find({})
+      .skip(offset || 1)
+      .limit(limit || 10)
+      .lean()
+      .exec();
   }
 
   async findCoffee(id: string) {
