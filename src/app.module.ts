@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CoffeesModule } from './modules/coffees/coffees.module';
-import { CoffeeRatingModule } from './modules/coffee-rating/coffee-rating.module';
 import { CommonModule } from './modules/common/common.module';
 
 @Module({
@@ -10,7 +9,6 @@ import { CommonModule } from './modules/common/common.module';
       dbName: 'NestApi',
     }),
     CoffeesModule,
-    CoffeeRatingModule,
     CommonModule,
   ],
 })
